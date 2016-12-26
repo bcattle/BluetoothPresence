@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11134" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1212" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11106"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="BluetoothPresence" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -16,11 +18,59 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dyz-2g-7ad">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="TqE-U3-nXc"/>
+                                </constraints>
+                                <state key="normal" title="Go"/>
+                                <connections>
+                                    <action selector="advertiseButtonTapped" destination="BYZ-38-t0r" eventType="touchUpInside" id="aQv-38-vRv"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CLE-Xq-Zdf">
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tLh-LC-byp">
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="mPR-Kc-Qz7"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="6Fe-5G-LNt">
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </tableView>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="mPR-Kc-Qz7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="7Za-cr-1E6"/>
+                            <constraint firstItem="mPR-Kc-Qz7" firstAttribute="centerY" secondItem="tLh-LC-byp" secondAttribute="centerY" id="9be-7a-BVA"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="6Fe-5G-LNt" secondAttribute="bottom" id="A4G-Cu-tq0"/>
+                            <constraint firstAttribute="trailing" secondItem="6Fe-5G-LNt" secondAttribute="trailing" id="FUz-mM-nas"/>
+                            <constraint firstItem="dyz-2g-7ad" firstAttribute="centerY" secondItem="CLE-Xq-Zdf" secondAttribute="centerY" id="GLa-Ga-bu0"/>
+                            <constraint firstItem="dyz-2g-7ad" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="P2t-5w-kE9"/>
+                            <constraint firstItem="CLE-Xq-Zdf" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="bxB-eF-wQf"/>
+                            <constraint firstItem="6Fe-5G-LNt" firstAttribute="top" secondItem="mPR-Kc-Qz7" secondAttribute="bottom" constant="8" id="cmp-gQ-Srw"/>
+                            <constraint firstItem="6Fe-5G-LNt" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="fbQ-xA-efh"/>
+                            <constraint firstItem="dyz-2g-7ad" firstAttribute="leading" secondItem="CLE-Xq-Zdf" secondAttribute="trailing" constant="8" id="m9z-Jn-2Ij"/>
+                            <constraint firstItem="CLE-Xq-Zdf" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="oD3-Nq-rAg"/>
+                            <constraint firstItem="dyz-2g-7ad" firstAttribute="leading" secondItem="CLE-Xq-Zdf" secondAttribute="trailing" constant="8" id="pQJ-bv-NRm"/>
+                            <constraint firstItem="tLh-LC-byp" firstAttribute="leading" secondItem="mPR-Kc-Qz7" secondAttribute="trailing" constant="8" id="tdA-k8-vS1"/>
+                            <constraint firstItem="mPR-Kc-Qz7" firstAttribute="top" secondItem="CLE-Xq-Zdf" secondAttribute="bottom" constant="8" id="zRw-n7-976"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="activityIndicator" destination="mPR-Kc-Qz7" id="hlp-ee-kQP"/>
+                        <outlet property="statusLabel" destination="tLh-LC-byp" id="lEC-4Y-fja"/>
+                        <outlet property="tableView" destination="6Fe-5G-LNt" id="vfS-wL-shd"/>
+                        <outlet property="usernameInput" destination="CLE-Xq-Zdf" id="YU5-gC-BwH"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="138.98050974512745"/>
         </scene>
     </scenes>
 </document>

@@ -9,17 +9,25 @@
 import UIKit
 
 class ViewController: UIViewController {
+    @IBOutlet var usernameInput: UITextField!
+    @IBOutlet var tableView: UITableView!
+    @IBOutlet var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet var statusLabel: UILabel!
 
+    var bluetooth: BluetoothController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction func advertiseButtonTapped () {
+        if let text = usernameInput.text {
+            usernameInput.isEnabled = false
+            bluetooth = BluetoothController(username: text)
+        }
     }
-
 
 }
 
