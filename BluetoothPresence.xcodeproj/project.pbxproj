@@ -15,9 +15,13 @@
 		93658FC91E0F9B6A00099CAB /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93658FC81E0F9B6A00099CAB /* CoreBluetooth.framework */; };
 		93658FCB1E0F9C4600099CAB /* BluetoothController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93658FCA1E0F9C4600099CAB /* BluetoothController.swift */; };
 		93658FCF1E0F9CD700099CAB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93658FCE1E0F9CD700099CAB /* Constants.swift */; };
+		ECE8F05F298481FCA1DDDC43 /* Pods_BluetoothPresence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F082A64BCFCD2EC0416BC95 /* Pods_BluetoothPresence.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3A434A34CF07D050F4963095 /* Pods-BluetoothPresence.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothPresence.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BluetoothPresence/Pods-BluetoothPresence.debug.xcconfig"; sourceTree = "<group>"; };
+		8F082A64BCFCD2EC0416BC95 /* Pods_BluetoothPresence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BluetoothPresence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		932AD8371E2D803B00E7A7D5 /* BluetoothPresence-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BluetoothPresence-Bridging-Header.h"; sourceTree = "<group>"; };
 		93658FB21E0F9B4E00099CAB /* BluetoothPresence.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothPresence.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93658FB51E0F9B4E00099CAB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		93658FB71E0F9B4E00099CAB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -28,6 +32,7 @@
 		93658FC81E0F9B6A00099CAB /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		93658FCA1E0F9C4600099CAB /* BluetoothController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothController.swift; sourceTree = "<group>"; };
 		93658FCE1E0F9CD700099CAB /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		9E37E775D58B4A0840141199 /* Pods-BluetoothPresence.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BluetoothPresence.release.xcconfig"; path = "Pods/Target Support Files/Pods-BluetoothPresence/Pods-BluetoothPresence.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +41,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				93658FC91E0F9B6A00099CAB /* CoreBluetooth.framework in Frameworks */,
+				ECE8F05F298481FCA1DDDC43 /* Pods_BluetoothPresence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,6 +54,7 @@
 				93658FB41E0F9B4E00099CAB /* BluetoothPresence */,
 				93658FB31E0F9B4E00099CAB /* Products */,
 				93658FC71E0F9B6A00099CAB /* Frameworks */,
+				D4D39165F4CF70C39F9BF88C /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				93658FC81E0F9B6A00099CAB /* CoreBluetooth.framework */,
+				8F082A64BCFCD2EC0416BC95 /* Pods_BluetoothPresence.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -83,6 +91,7 @@
 		93658FCC1E0F9C7200099CAB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				932AD8371E2D803B00E7A7D5 /* BluetoothPresence-Bridging-Header.h */,
 				93658FBC1E0F9B4E00099CAB /* Assets.xcassets */,
 				93658FC11E0F9B4E00099CAB /* Info.plist */,
 			);
@@ -98,6 +107,15 @@
 			name = Storyboards;
 			sourceTree = "<group>";
 		};
+		D4D39165F4CF70C39F9BF88C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3A434A34CF07D050F4963095 /* Pods-BluetoothPresence.debug.xcconfig */,
+				9E37E775D58B4A0840141199 /* Pods-BluetoothPresence.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -105,9 +123,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 93658FC41E0F9B4E00099CAB /* Build configuration list for PBXNativeTarget "BluetoothPresence" */;
 			buildPhases = (
+				038745779547816EE3BA75C9 /* [CP] Check Pods Manifest.lock */,
 				93658FAE1E0F9B4E00099CAB /* Sources */,
 				93658FAF1E0F9B4E00099CAB /* Frameworks */,
 				93658FB01E0F9B4E00099CAB /* Resources */,
+				A56AD83343A77D632C40AC61 /* [CP] Embed Pods Frameworks */,
+				6C8F50EDE5D06FF7E4C891AE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -131,6 +152,7 @@
 					93658FB11E0F9B4E00099CAB = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 2BB96LL2BX;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -165,6 +187,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		038745779547816EE3BA75C9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		6C8F50EDE5D06FF7E4C891AE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BluetoothPresence/Pods-BluetoothPresence-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A56AD83343A77D632C40AC61 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BluetoothPresence/Pods-BluetoothPresence-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		93658FAE1E0F9B4E00099CAB /* Sources */ = {
@@ -297,28 +367,35 @@
 		};
 		93658FC51E0F9B4E00099CAB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3A434A34CF07D050F4963095 /* Pods-BluetoothPresence.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 2BB96LL2BX;
 				INFOPLIST_FILE = BluetoothPresence/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.bcattle.BluetoothPresence;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "BluetoothPresence/BluetoothPresence-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		93658FC61E0F9B4E00099CAB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E37E775D58B4A0840141199 /* Pods-BluetoothPresence.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 2BB96LL2BX;
 				INFOPLIST_FILE = BluetoothPresence/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.bcattle.BluetoothPresence;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "BluetoothPresence/BluetoothPresence-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

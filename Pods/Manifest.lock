@@ -1,0 +1,12 @@
+PODS:
+  - DateTools (1.7.0)
+
+DEPENDENCIES:
+  - DateTools
+
+SPEC CHECKSUMS:
+  DateTools: 53288ee8b905fdc75897a1e6b5cc0144b14cba60
+
+PODFILE CHECKSUM: 20bf5925d1cfb79c9f3b1ffbe9a3b2cc5459375f
+
+COCOAPODS: 1.1.1
