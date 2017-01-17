@@ -129,6 +129,7 @@
 				93658FB01E0F9B4E00099CAB /* Resources */,
 				A56AD83343A77D632C40AC61 /* [CP] Embed Pods Frameworks */,
 				6C8F50EDE5D06FF7E4C891AE /* [CP] Copy Pods Resources */,
+				932AD83B1E2DC48300E7A7D5 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -218,6 +219,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BluetoothPresence/Pods-BluetoothPresence-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		932AD83B1E2DC48300E7A7D5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Script that increments the build number\n# automatically to keep synced to git commit count\n# from http://blog.red.to/posts/automatically-bump-xcode-version-number.html\n\n#if [ ${CONFIGURATION} == \"Release\" ]; then\nbuildNumber=$(git rev-list --count HEAD)\ngitHash=$(git rev-parse --short HEAD)\n#dsyminfo=\"$BUILT_PRODUCTS_DIR/$PRODUCT_NAME.app.dSYM/Contents/info.plist\"\n/usr/libexec/PlistBuddy -c \"Add :GitHash string\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n/usr/libexec/PlistBuddy -c \"Set :GitHash $gitHash\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n#/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"${dsyminfo}\"\n#fi;\n";
 		};
 		A56AD83343A77D632C40AC61 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -46,6 +46,7 @@ class BluetoothController: NSObject {
     var scanPeriodSecs = 5.0    // 10.0
     private var scanTimer:Timer?
     private var isScanning = false
+    fileprivate var centralStateWasRestored = false
         
     var sightingsByPeripheralID = [UUID:PresenceSighting]()
     // We have to retain a reference to periphals while we're connected to them
@@ -62,12 +63,14 @@ class BluetoothController: NSObject {
         
         centralManger = CBCentralManager(delegate: self, queue: nil,
                                          options: [CBCentralManagerOptionShowPowerAlertKey: true,
-//                                                   CBCentralManagerOptionRestoreIdentifierKey: "com.getnearly.BluetoothController.central"
-            ])
+                                                   CBCentralManagerOptionRestoreIdentifierKey: "com.getnearly.BluetoothController.central"])
         
         peripheralManager = CBPeripheralManager(delegate: self, queue: nil,
                                                 options: [CBPeripheralManagerOptionShowPowerAlertKey: true,
                                                           CBPeripheralManagerOptionRestoreIdentifierKey: "com.getnearly.BluetoothController.peripheral"])
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(BluetoothController.handleAppEnteredBackground), name: Notification.Name.UIApplicationWillResignActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(BluetoothController.handleAppEnteredForeground), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
     }
     
     fileprivate func setIdentityServiceUsername(username:String) {
@@ -117,6 +120,7 @@ class BluetoothController: NSObject {
         // Stops the scan timer
         if let timer = scanTimer {
             timer.invalidate()
+            scanTimer = nil
         }
         if isScanning {
             scanTimerFired()
@@ -146,18 +150,25 @@ class BluetoothController: NSObject {
         }
     }
     
-//    func getAllSightingsString() -> String {
-//        var str = ""
-//        for sighting in sightingsByPeripheralID.values {
-//            str = str + "\n \(sighting.username!)\t\(sighting.lastRSSI!)\t\(sighting.lastSeenAt!)"
-//        }
-//        return str
-//    }
+    @objc
+    private func handleAppEnteredBackground() {
+        if scanTimer != nil {
+            print("App entering background, starting to scan forever")
+            // Start scanning forever
+            stopScanning()
+            scanTimerFired()
+        }
+    }
     
-//    func printKnownUsers() {
-//        print("Known users:")
-//        print(getAllSightingsString())
-//    }
+    @objc
+    private func handleAppEnteredForeground() {
+        if centralStateWasRestored || isScanning {
+            print("App entering foreground, starting intermittent scan")
+            // Disable continous scan and switch to scan timer
+            stopScanning()
+            startScanning()
+        }
+    }
 }
 
 extension BluetoothController: CBCentralManagerDelegate {
@@ -167,9 +178,10 @@ extension BluetoothController: CBCentralManagerDelegate {
         }
     }
     
-//    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]) {
-//        print("central manager restored state")
-//    }
+    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]) {
+        print("central manager restored state")
+        centralStateWasRestored = true
+    }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         print("discovered peripheral \(peripheral.identifier)")

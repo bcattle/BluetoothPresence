@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,10 +20,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let launchOptions = launchOptions {
             if let bluetoothCentrals = launchOptions[.bluetoothCentrals] {
                 print("Launched with bluetooth centrals: \(bluetoothCentrals)")
+                _ = BluetoothController.sharedInstance
             }
             if let bluetoothPeripherals = launchOptions[.bluetoothPeripherals] {
                 print("Launched with bluetooth peripherals: \(bluetoothPeripherals)")
+                _ = BluetoothController.sharedInstance
             }
+        }
+        
+        // Set up notificaitons
+        if #available(iOS 10.0, *) {
+            // User Notifications Framework 
+            let center = UNUserNotificationCenter.current()
+            center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+                // Enable or disable features based on authorization.
+                if let error = error {
+                    print("Error registering for notifications: \(error)")
+                } else {
+                    print("Notifications permission granted: \(granted)")
+                }
+            }
+        }
+        else {
+            // TODO ... 
+            
         }
         
         return true

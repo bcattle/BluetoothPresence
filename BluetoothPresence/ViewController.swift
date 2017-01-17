@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class ViewController: UIViewController {
     @IBOutlet weak var textView: UITextView!
@@ -18,6 +19,7 @@ class ViewController: UIViewController {
     
 //    var bluetooth: BluetoothController!
     var displayUpdateTimer:Timer!
+    var knownUsernames = Set<String>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,11 +28,6 @@ class ViewController: UIViewController {
         scanningIndicator.isHidden = true
         scanningLabel.isHidden = true
         
-        let userID = UUID()
-        textView.text = textView.text + "\nGenerated user ID \(userID)"
-        
-//        bluetooth = BluetoothController()
-//        bluetooth.delegate = self
         BluetoothController.sharedInstance.delegate = self
         
         displayUpdateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.updateDisplay), userInfo: nil, repeats: true)
@@ -79,6 +76,10 @@ class ViewController: UIViewController {
         }
     }
 
+    @IBAction func viewTapped() {
+        usernameField.resignFirstResponder()
+    }
+    
     @objc
     func updateDisplay() {
         let str = NSMutableAttributedString()
@@ -102,7 +103,10 @@ class ViewController: UIViewController {
                     // Default
                     attrs = [NSForegroundColorAttributeName:UIColor.black]
                 }
-                let userStr = "\(username)\t\t\(rssi)\t\t\(lastSeen.timeAgoSinceNow()!)\n"
+                let usernameStr = "\(username)".padding(toLength: 20, withPad: " ", startingAt: 0)
+                let rssiStr = "\(rssi)".padding(toLength: 16, withPad: " ", startingAt: 0)
+                let userStr = "\(usernameStr)\(rssiStr)\(lastSeen.timeAgoSinceNow()!)\n"
+//                let userStr = "\(username)\t\t\(rssi)\t\t\(lastSeen.timeAgoSinceNow()!)\n"
                 str.append(NSAttributedString(string: userStr, attributes: attrs))
             }
         }
@@ -124,7 +128,38 @@ extension ViewController: BluetoothControllerDelegate {
     }
     
     func bluetoothController(controller: BluetoothController, sightingUpdated sighting: PresenceSighting) {
-//        textView.text = controller.getAllSightingsString()
+        if let username = sighting.username {
+            if knownUsernames.contains(username) {
+                // Someone we've already seen
+                
+            } else {
+                // Found a new username 
+                if UIApplication.shared.applicationState == .background {
+                    // If the app is in the background, send a local notification
+                    if #available(iOS 10.0, *) {
+                        let content = UNMutableNotificationContent()
+                        content.title = NSString.localizedUserNotificationString(forKey: "New Nearly", arguments: nil)
+                        content.body = NSString.localizedUserNotificationString(forKey: "User %@ is near you!",
+                                                                                arguments: [username])
+                        content.sound = UNNotificationSound.default()
+                        
+                        // Create the request object.
+                        let request = UNNotificationRequest(identifier: "UserNearby", content: content, trigger: nil)
+                        
+                        let center = UNUserNotificationCenter.current()
+                        center.add(request) { (error : Error?) in
+                            if let theError = error {
+                                print(theError.localizedDescription)
+                            }
+                        }
+//                        knownUsernames.insert(username)
+                        
+                    } else {
+                        // TODO ...
+                    }
+                }
+            }
+        }
     }
 }
 
