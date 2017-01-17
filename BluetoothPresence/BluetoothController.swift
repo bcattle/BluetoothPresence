@@ -9,16 +9,47 @@
 import Foundation
 import CoreBluetooth
 
+// NOTE: There is a bug in iOS 10.0 (10.0.0, 10.0.1): 
+// background advertising doesn't work.
+// see https://forums.developer.apple.com/thread/51309
+
 class PresenceSighting {
     var username:String?
-    var lastSeenAt:Date?
+    var lastSeenAt:NSDate?
     var lastRSSI:Int?
 }
 
+protocol BluetoothControllerDelegate {
+    func bluetoothControllerStartedScanning(controller:BluetoothController)
+    func bluetoothControllerStoppedScanning(controller:BluetoothController)
+    func bluetoothController(controller:BluetoothController, sightingUpdated sighting:PresenceSighting)
+}
+
 class BluetoothController: NSObject {
+    // Singleton, to support state restoration
+    static let sharedInstance = BluetoothController()
+    
+    var delegate:BluetoothControllerDelegate?
+
+    var peripheralIsRunning = false
+    private var usernameCharacteristic:CBMutableCharacteristic?
+    var username: String? {
+        didSet {
+            if peripheralIsRunning {
+                if let username = username {
+                    setIdentityServiceUsername(username: username)
+                }
+            }
+        }
+    }
+    
+    var scanPeriodSecs = 5.0    // 10.0
+    private var scanTimer:Timer?
+    private var isScanning = false
+        
     var sightingsByPeripheralID = [UUID:PresenceSighting]()
+    // We have to retain a reference to periphals while we're connected to them
     var peripherals = Set<CBPeripheral>()
-    let userID: UUID
     
     // Runs the process as a central, scans for peripherals
     fileprivate var centralManger: CBCentralManager!
@@ -26,33 +57,40 @@ class BluetoothController: NSObject {
     // Publishes our presence as a peripheral
     private var peripheralManager: CBPeripheralManager!
     
-    init(userID: UUID) {
-        self.userID = userID
+    private override init() {
         super.init()
         
         centralManger = CBCentralManager(delegate: self, queue: nil,
-                                         options: [CBCentralManagerOptionShowPowerAlertKey: true])
+                                         options: [CBCentralManagerOptionShowPowerAlertKey: true,
+//                                                   CBCentralManagerOptionRestoreIdentifierKey: "com.getnearly.BluetoothController.central"
+            ])
         
         peripheralManager = CBPeripheralManager(delegate: self, queue: nil,
-                                                options: [CBCentralManagerOptionShowPowerAlertKey: true])
+                                                options: [CBPeripheralManagerOptionShowPowerAlertKey: true,
+                                                          CBPeripheralManagerOptionRestoreIdentifierKey: "com.getnearly.BluetoothController.peripheral"])
     }
     
-    func setupIdentityService() {
+    fileprivate func setIdentityServiceUsername(username:String) {
         // Configures the peripheral to publish the user's identity (username and ID)
         // A "Service" has one or more "Characteristics"
         
-        let identityCharacteristicID = CBUUID(string: Constants.Bluetooth.Peripheral.IdentityCharacteristicUUID)
-        let username = "bryan"
-        let identityData = username.data(using: .utf8)
-        let characteristic = CBMutableCharacteristic(type: identityCharacteristicID,
-                                              properties: .read,
-                                              value: identityData,
-                                              permissions: .readable)
+        let identityData = username.data(using: .utf8)!
         
-        let identityServiceID = CBUUID(string: Constants.Bluetooth.Peripheral.IdentityServiceUUID)
-        let service = CBMutableService(type: identityServiceID, primary: true)
-        service.characteristics = [characteristic]
-        peripheralManager.add(service)
+        if usernameCharacteristic == nil {
+            let identityCharacteristicID = CBUUID(string: Constants.Bluetooth.Peripheral.IdentityCharacteristicUUID)
+            usernameCharacteristic = CBMutableCharacteristic(type: identityCharacteristicID,
+                                                             properties: .read,
+                                                             value: identityData,
+                                                             permissions: .readable)
+            
+            let identityServiceID = CBUUID(string: Constants.Bluetooth.Peripheral.IdentityServiceUUID)
+            let service = CBMutableService(type: identityServiceID, primary: true)
+            service.characteristics = [usernameCharacteristic!]
+            peripheralManager.add(service)
+        }
+        else {
+            usernameCharacteristic!.value = identityData
+        }
     }
     
     // Advertising
@@ -69,14 +107,57 @@ class BluetoothController: NSObject {
     // Scanning
     
     func startScanning() {
-        let identityServiceID = CBUUID(string: Constants.Bluetooth.Peripheral.IdentityServiceUUID)
-        centralManger.scanForPeripherals(withServices: [identityServiceID], options: nil)
+        // Start the scan
+        scanTimerFired()
+        // Start the timer
+        scanTimer = Timer.scheduledTimer(timeInterval: scanPeriodSecs, target: self, selector: #selector(BluetoothController.scanTimerFired), userInfo: nil, repeats: true)
     }
     
     func stopScanning() {
-        centralManger.stopScan()
+        // Stops the scan timer
+        if let timer = scanTimer {
+            timer.invalidate()
+        }
+        if isScanning {
+            scanTimerFired()
+        }
     }
     
+    @objc
+    private func scanTimerFired() {
+        if isScanning {
+            print("Timer fired, scan finished")
+            centralManger.stopScan()
+            isScanning = false
+            // printKnownUsers()
+            if let delegate = delegate {
+                delegate.bluetoothControllerStoppedScanning(controller: self)
+            }
+            
+        } else {
+            print("Timer fired, starting scan")
+            let identityServiceID = CBUUID(string: Constants.Bluetooth.Peripheral.IdentityServiceUUID)
+            centralManger.scanForPeripherals(withServices: [identityServiceID], options: nil)
+            isScanning = true
+            if let delegate = delegate {
+                delegate.bluetoothControllerStartedScanning(controller: self)
+            }
+            
+        }
+    }
+    
+//    func getAllSightingsString() -> String {
+//        var str = ""
+//        for sighting in sightingsByPeripheralID.values {
+//            str = str + "\n \(sighting.username!)\t\(sighting.lastRSSI!)\t\(sighting.lastSeenAt!)"
+//        }
+//        return str
+//    }
+    
+//    func printKnownUsers() {
+//        print("Known users:")
+//        print(getAllSightingsString())
+//    }
 }
 
 extension BluetoothController: CBCentralManagerDelegate {
@@ -86,26 +167,37 @@ extension BluetoothController: CBCentralManagerDelegate {
         }
     }
     
+//    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]) {
+//        print("central manager restored state")
+//    }
+    
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         print("discovered peripheral \(peripheral.identifier)")
         if let sighting = sightingsByPeripheralID[peripheral.identifier] {
-            print("Known user \"\(sighting.username!)\"")
-            // Known user, no need to connect
-            // update its last seen and signal strength
-            sighting.lastRSSI = RSSI.intValue
-            sighting.lastSeenAt = Date()
+            if let username = sighting.username {
+                print("Known user \"\(username)\"")
+                // Known user, no need to connect
+                // update its last seen and signal strength
+                sighting.lastRSSI = RSSI.intValue
+                sighting.lastSeenAt = NSDate()
+                if let delegate = delegate {
+                    delegate.bluetoothController(controller: self, sightingUpdated: sighting)
+                }
+                return
+            } else {
+                // No username, remove the old sighting object
+                sightingsByPeripheralID.removeValue(forKey: peripheral.identifier)
+            }
         }
-        else {
-            // Unknown user, connect to get their userID
-            print("Unknown user, connecting")
-            let sighting = PresenceSighting()
-            sighting.lastRSSI = RSSI.intValue
-            sighting.lastSeenAt = Date()
-            sightingsByPeripheralID[peripheral.identifier] = sighting
-            peripheral.delegate = self
-            peripherals.insert(peripheral)
-            central.connect(peripheral, options: nil)
-        }
+        // Unknown user, connect to get their username
+        print("Unknown user, connecting")
+        let sighting = PresenceSighting()
+        sighting.lastRSSI = RSSI.intValue
+        sighting.lastSeenAt = NSDate()
+        sightingsByPeripheralID[peripheral.identifier] = sighting
+        peripheral.delegate = self
+        peripherals.insert(peripheral)
+        central.connect(peripheral, options: nil)
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -128,8 +220,12 @@ extension BluetoothController: CBCentralManagerDelegate {
 }
 
 extension BluetoothController: CBPeripheralDelegate {
+    func peripheralManager(_ peripheral: CBPeripheralManager, willRestoreState dict: [String : Any]) {
+        print("peripheral manager will restore state")
+    }
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        print("discovered servicess")
+//        print("discovered services")
         let firstService = peripheral.services!.first!
         peripheral.discoverCharacteristics(nil, for: firstService)
     }
@@ -138,7 +234,7 @@ extension BluetoothController: CBPeripheralDelegate {
         if let error = error {
             print("Error discovering characteristics for service: \(error)")
         } else {
-            print("discovered characteristics, reading")
+//            print("discovered characteristics, reading")
             let firstCharacteristic = service.characteristics!.first!
             peripheral.readValue(for: firstCharacteristic)
         }
@@ -148,18 +244,14 @@ extension BluetoothController: CBPeripheralDelegate {
         // print("didUpdateValueFor characteristic \(characteristic)")
         let username = String(data:characteristic.value!, encoding:String.Encoding.utf8)!
         print("Retrieved username \(username) from peripheral \(peripheral.identifier)")
-        sightingsByPeripheralID[peripheral.identifier]!.username = username
+        let sighting = sightingsByPeripheralID[peripheral.identifier]!
+        sighting.username = username
         // Done
         centralManger.cancelPeripheralConnection(peripheral)
+        if let delegate = delegate {
+            delegate.bluetoothController(controller: self, sightingUpdated: sighting)
+        }
     }
-    
-//    func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: Error?) {
-//        print("read RSSI")
-//    }
-//
-//    func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
-//        print("updated name")
-//    }
 }
 
 extension BluetoothController: CBPeripheralManagerDelegate {
@@ -167,7 +259,11 @@ extension BluetoothController: CBPeripheralManagerDelegate {
         if #available(iOS 10.0, *) {
             print("peripheralManagerDidUpdateState to \(getStringForCBManagerState(state:peripheral.state))")
         }
-        setupIdentityService()
+        peripheralIsRunning = true
+        // Now that the peripheral manager is running, we can set up the services
+        if let username = username {
+            setIdentityServiceUsername(username: username)
+        }
     }
     
     func peripheralManager(_ peripheral: CBPeripheralManager, didAdd service: CBService, error: Error?) {

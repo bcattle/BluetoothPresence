@@ -21,4 +21,7 @@ struct Constants {
             
         }
     }
+    struct Defaults {
+        static let DefaultUsernameKeyName = "DefaultUsername"
+    }
 }

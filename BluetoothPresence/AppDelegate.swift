@@ -13,9 +13,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        if let launchOptions = launchOptions {
+            if let bluetoothCentrals = launchOptions[.bluetoothCentrals] {
+                print("Launched with bluetooth centrals: \(bluetoothCentrals)")
+            }
+            if let bluetoothPeripherals = launchOptions[.bluetoothPeripherals] {
+                print("Launched with bluetooth peripherals: \(bluetoothPeripherals)")
+            }
+        }
+        
         return true
     }
 
